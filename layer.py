@@ -5,12 +5,12 @@ import scipy as sp
 from activation import softmax,ReLU,sigmoid
 
 class hiddenLayer:
-    def __init__(self,input_size,output_size,activation = 'softmax'):
-        self.bias = np.zeros(output_size)
-        self.weight = np.zeros((output_size,input_size))
+    def __init__(self,input_size,output_size,activation = 'sigmoid'):
+        self.bias = np.random.randn(output_size)
+        self.weight = np.random.randn(output_size,input_size)
         self.which_activation = activation
 
-    def output(self,input):
+    def process(self,input):
         out = np.dot(self.weight,input) + self.bias
         return self.activation(out)
 
@@ -25,13 +25,26 @@ class hiddenLayer:
 
 
 class inputLayer:
-    def __init__(self,input_size):
-        self.layer = np.zeros(input_size)
+    def __init__(self,size):
+        self.size = size
+
+    def process(self,input):
+        return input
 
 class outputLayer:
-    def __init__(self,output_size):
-        pass
+    def __init__(self,size,activation = 'softmax'):
+        self.which_activation = activation
+        self.size = size
     
 
-    def output(self,input):
-        pass
+    def process(self,input):
+        return self.activation(input)
+    
+    def activation(self,input):
+        name = self.which_activation
+        if name == 'softmax':
+            return softmax(input)
+        elif name == 'ReLU':
+            return Relu(input)
+        elif name == 'sigmoid':
+            return sigmoid(input)

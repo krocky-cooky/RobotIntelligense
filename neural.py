@@ -4,35 +4,57 @@ import numpy as np
 
 
 class neuralNetwork:
-    def __init__(self,learning_rate = 0.001,layer_list = []):
+    def __init__(self,learning_rate = 0.01,layer_list = [],iters_num = 10000):
         self.layers = list()
+        self.deltas = list()
         self.learning_rate = learning_rate
+        self.iters_num = 10000
         if layer_list:
             self.set_layer(layer_list)
 
     def set_layer(self,layer_list):
+        input_size = layer_list[0]
+        output_size = layer_list[2]
+        hidden_layers = layer_list[1] 
         
-        input_layer = inputLayer(layer_list[0])
+        input_layer = inputLayer(input_size)
         self.layers.append(input_layer)
-        for i in range(1,len(layer_list)):
-            hidden_layer = hiddenLayer(input_size = layer_list[i-1],output_size = layer_list[i])
-            self.layers.append(hidden_layer)
-        output_layer = outputLayer(layer_list[len(layer_list)-1])
+        former = input_size
+        for sz in hidden_layers:
+            layer = hiddenLayer(input_size=former,output_size=sz,learning_rate=self.learning_rate,activation='Relu')
+            self.layers.append(layer)
+            former = sz
+            #delta = np.zeros(layer_list[i])
+            #self.deltas.append(delta)
+
+        output_layer = outputLayer(input_size=former,output_size=output_size,activation='identity',learning_rate=self.learning_rate)
         self.layers.append(output_layer)
         print('successfully layers are updated')
     
+    
 
     def calc(self,input):
-        if self.layers[0].size != input.shape[0]:
-            print('The size of inserted vector is not proper')
-            return
+        
         vector = input
         for x in self.layers:
             vector = x.process(vector)
 
         return vector
 
-    def loss(self,input,t):
-        y = self.calc(input)
+    @classmethod
+    def loss(self,y,t):
         loss = euler_loss(y,t)
         return loss
+
+    def backword_propagation(self,y,t):
+        dif = y-t
+        layers = self.layers[1:]
+        for layer in reversed(layers):
+            layer.update_delta(dif)
+            dif = layer.send_backword()
+            layer.update_weight()
+
+
+    def train(self,train,test):
+        pass
+

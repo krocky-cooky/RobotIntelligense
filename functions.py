@@ -1,22 +1,35 @@
 import numpy as np
 import math
 
-def softmax(a):
+def softmax(a,div):
     c = np.max(a)
     exp_a = np.exp(a-c)
     sum_exp_a = np.sum(exp_a)
     y = exp_a/sum_exp_a
     return y
 
-def sigmoid(x):
-    return 1/(1+np.exp(-x))
+def sigmoid(x,div):
+    if div:
+        return sigmoid(x,False)*(1-sigmoid(x,False))
+    else:
+        return 1/(1+np.exp(-x))
 
 
-def Relu(x):
-    if x > 0:
-        return x
+def Relu(x,div):
+    if div:
+        mask = (x > 0)
+        res = np.zeros_like(x)
+        #print(mask)
+        res[mask] = 1
+        return res
+    else:
+        return np.maximum(0,x)
+
+def identity(x,div):
+    if div:
+        return 1
     else :
-        return 0
+        return x
 
 
 def euler_loss(y,t):

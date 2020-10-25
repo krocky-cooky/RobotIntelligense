@@ -4,7 +4,7 @@ import numpy as np
 
 
 class neuralNetwork:
-    def __init__(self,learning_rate = 0.01,layer_list = [],iters_num = 10000):
+    def __init__(self,learning_rate = 0.0001,layer_list = [],iters_num = 10000):
         self.layers = list()
         self.deltas = list()
         self.learning_rate = learning_rate

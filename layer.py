@@ -45,6 +45,8 @@ class hiddenLayer:
         #print(self.weight.shape)
         #print(self.delta)
         self.weight -= x
+        self.bias -= self.learning_rate*np.sum(self.delta,axis=0)
+
 
 
 

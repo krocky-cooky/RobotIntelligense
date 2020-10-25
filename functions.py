@@ -12,8 +12,15 @@ def sigmoid(x):
     return 1/(1+np.exp(-x))
 
 
-def ReLU(x):
+def Relu(x):
     if x > 0:
         return x
     else :
         return 0
+
+
+def euler_loss(y,t):
+    loss = np.sum((y-t)**2)/2
+
+    return loss
+

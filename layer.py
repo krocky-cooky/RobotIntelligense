@@ -2,10 +2,10 @@ import sys,os
 import math
 import numpy as np
 import scipy as sp
-from activation import softmax,ReLU,sigmoid
+from functions import softmax,Relu,sigmoid
 
 class hiddenLayer:
-    def __init__(self,input_size,output_size,activation = 'sigmoid'):
+    def __init__(self,input_size,output_size,activation = 'Relu'):
         self.bias = np.random.randn(output_size)
         self.weight = np.random.randn(output_size,input_size)
         self.which_activation = activation

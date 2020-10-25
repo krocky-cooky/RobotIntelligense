@@ -1,9 +1,12 @@
 from layer import hiddenLayer,inputLayer,outputLayer
+from functions import euler_loss
+import numpy as np
 
 
 class neuralNetwork:
-    def __init__(self,layer_list = []):
+    def __init__(self,learning_rate = 0.001,layer_list = []):
         self.layers = list()
+        self.learning_rate = learning_rate
         if layer_list:
             self.set_layer(layer_list)
 
@@ -28,3 +31,8 @@ class neuralNetwork:
             vector = x.process(vector)
 
         return vector
+
+    def loss(self,input,t):
+        y = self.calc(input)
+        loss = euler_loss(y,t)
+        return loss

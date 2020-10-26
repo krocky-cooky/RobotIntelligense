@@ -4,13 +4,15 @@ import numpy as np
 
 
 class neuralNetwork:
-    def __init__(self,learning_rate = 0.0001,layer_list = [],iters_num = 10000):
+    def __init__(self,learning_rate = 0.0001,epoch = 20000,batch_per = 0.6):
         self.layers = list()
         self.deltas = list()
         self.learning_rate = learning_rate
-        self.iters_num = 10000
-        if layer_list:
-            self.set_layer(layer_list)
+        self.batch_per = batch_per
+        self.epoch = epoch
+        self.loss_list = list()
+        self.acc_list = list()
+        
 
     def set_layer(self,layer_list):
         input_size = layer_list[0]
@@ -33,7 +35,7 @@ class neuralNetwork:
     
     
 
-    def calc(self,input):
+    def predict(self,input):
         
         vector = input
         for x in self.layers:
@@ -55,6 +57,37 @@ class neuralNetwork:
             layer.update_weight()
 
 
-    def train(self,train,test):
-        pass
+    def train(self,x,t):
+        train_size = x.shape[0]
+        batch_size = int(train_size*self.batch_per)
+        for i in range(self.epoch):
+            batch = np.random.choice(train_size,batch_size)
+            x_batch = x[batch]
+            t_batch = t[batch]
+            y = self.predict(x_batch)
+            if i%100 == 0:
+                word = '========epoch' + str(i+1) + '========='
+                print(word)
+                loss = neuralNetwork.loss(y,t_batch)
+                y_sub = np.argmax(y,axis=1)
+                t_sub = np.argmax(t_batch,axis=1)
+                acc = np.sum(y_sub == t_sub)/float(batch_size)
+                self.loss_list.append(loss)
+                self.acc_list.append(acc)
+                print('loss : ' + str(loss))
+                print('accuracy : ' + str(acc))
+                word = '='*len(word)
+                print(word)
+
+            self.backword_propagation(y,t_batch)
+            
+    def accuracy(self,x,t):
+        y = self.predict(x)
+        y_sub = np.argmax(y,axis=1)
+        t_sub = np.argmax(t,axis=1)
+        acc = np.sum(y_sub == t_sub)/float(y.shape[0])
+        return acc
+        
+
+        
 

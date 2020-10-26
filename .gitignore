@@ -1,4 +1,5 @@
 .DS_Store
 __pycache__/
 deep-learning-from-scratch/
-*pyc
+kuzushiji/
+*.pyc

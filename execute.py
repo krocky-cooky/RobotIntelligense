@@ -7,19 +7,20 @@ import datetime
 
 
 digit = load_digits()
-x = digit.data
+x = digit.data/16
 t = digit.target
 t = np.identity(10)[t]
 x_train,x_test,t_train,t_test = train_test_split(x,t,random_state=0)
 
 if __name__ == '__main__':
-    network = neuralNetwork(epoch=50000)
-    layer_list = [64,[30,40,30],10]
+    network = neuralNetwork(epoch=30000,learning_rate=0.0005)
+    layer_list = [64,[100,50,30],10]
     network.set_layer(layer_list)
     network.train(x_train,t_train)
     y_test = network.predict(x_test)
     loss = neuralNetwork.loss(y_test,t_test)
     accuracy = network.accuracy(x_test,t_test)
+    print('\n\n===========test case results=========')
     print('loss : {}'.format(loss))
     print('accuracy : {}'.format(accuracy))
 
@@ -38,8 +39,7 @@ if __name__ == '__main__':
     text += 'test_loss : ' + str(loss) + '\n'
     text += 'test_accuracy : ' + str(accuracy) + '\n'
     text += '\n\n'
-    with open('./results.txt',mode='w') as f:
+    
+    with open(path,mode='w') as f:
         f.write(text)
 
-
-    #print(network.layers[2].v)

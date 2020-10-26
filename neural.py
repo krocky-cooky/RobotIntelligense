@@ -26,12 +26,10 @@ class neuralNetwork:
             layer = hiddenLayer(input_size=former,output_size=sz,learning_rate=self.learning_rate,activation='Relu')
             self.layers.append(layer)
             former = sz
-            #delta = np.zeros(layer_list[i])
-            #self.deltas.append(delta)
 
         output_layer = outputLayer(input_size=former,output_size=output_size,activation='identity',learning_rate=self.learning_rate)
         self.layers.append(output_layer)
-        print('successfully layers are updated')
+        print('<< successfully layers are updated >>')
     
     
 
@@ -66,7 +64,7 @@ class neuralNetwork:
             t_batch = t[batch]
             y = self.predict(x_batch)
             if i%100 == 0:
-                word = '========epoch' + str(i+1) + '========='
+                word = '========epoch' + str(i) + '========='
                 print(word)
                 loss = neuralNetwork.loss(y,t_batch)
                 y_sub = np.argmax(y,axis=1)

@@ -17,10 +17,8 @@ class hiddenLayer:
 
     def process(self,input):
         self.input = input
-        #print(self.weight)
         self.v = np.dot(input,self.weight) + self.bias
         self.y = self.activation(self.v)
-        #print(self.y)
         return self.y
 
     def activation(self,input,div=False):
@@ -31,19 +29,15 @@ class hiddenLayer:
             return Relu(input,div)
         elif name == 'sigmoid':
             return sigmoid(input,div)
+        elif name == 'identity':
+            return identity(input,div)
 
     def update_delta(self,dif):
-        #print(self.activation(self.v,div=True))
         self.delta = self.activation(self.v,div=True)*dif
-        #print(self.delta)
 
 
     def update_weight(self):
-        #print(self.delta)
         x = self.learning_rate*np.dot(self.input.T,self.delta)
-        #print(x)
-        #print(self.weight.shape)
-        #print(self.delta)
         self.weight -= x
         self.bias -= self.learning_rate*np.sum(self.delta,axis=0)
 
@@ -77,7 +71,6 @@ class outputLayer:
         self.input = input
         self.v = np.dot(input,self.weight) + self.bias
         self.y = self.activation(self.v)
-        #print(self.y)
         return self.y
 
     def activation(self,input,div = False):

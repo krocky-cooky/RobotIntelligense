@@ -37,3 +37,8 @@ def euler_loss(y,t):
 
     return loss
 
+def cross_entropy_loss(y,t):
+    delta = 1e-7
+    loss = -np.sum(t*np.log(y + delta))
+    return loss
+

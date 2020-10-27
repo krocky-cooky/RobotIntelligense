@@ -36,8 +36,8 @@ class neuralNetwork:
     def predict(self,input):
         
         vector = input
-        for x in self.layers:
-            vector = x.process(vector)
+        for layer in self.layers:
+            vector = layer.process(vector)
 
         return vector
 
@@ -79,6 +79,9 @@ class neuralNetwork:
 
             self.backword_propagation(y,t_batch)
             
+        print('<< All training epochs ended. >>')
+
+
     def accuracy(self,x,t):
         y = self.predict(x)
         y_sub = np.argmax(y,axis=1)

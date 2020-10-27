@@ -1,5 +1,5 @@
 from layer import hiddenLayer,inputLayer,outputLayer
-from functions import euler_loss
+from functions import euler_loss,cross_entropy_loss
 import numpy as np
 
 

@@ -13,16 +13,17 @@ t = np.identity(10)[t]
 x_train,x_test,t_train,t_test = train_test_split(x,t,random_state=0)
 
 if __name__ == '__main__':
-    network = neuralNetwork(epoch=30000,learning_rate=0.0005)
-    layer_list = [64,[100,50,30],10]
+    network = neuralNetwork(epoch=31000,learning_rate=0.0002)
+    layer_list = [64,[100,70],10]
     network.set_layer(layer_list)
-    network.train(x_train,t_train)
+    (elapsed_time,train_acc) = network.train(x_train,t_train)
     y_test = network.predict(x_test)
     loss = neuralNetwork.loss(y_test,t_test)
     accuracy = network.accuracy(x_test,t_test)
     print('\n\n===========test case results=========')
     print('loss : {}'.format(loss))
-    print('accuracy : {}'.format(accuracy))
+    print('accuracy : {}\n'.format(accuracy))
+
 
 
     path = './results.txt'
@@ -38,8 +39,9 @@ if __name__ == '__main__':
     text += 'acc_list : ' + str(network.acc_list[::2]) + '\n'
     text += 'test_loss : ' + str(loss) + '\n'
     text += 'test_accuracy : ' + str(accuracy) + '\n'
+    text += 'elapsed_time : ' + str(elapsed_time)
     text += '\n\n'
-    
+
     with open(path,mode='w') as f:
         f.write(text)
 

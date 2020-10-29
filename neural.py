@@ -1,6 +1,7 @@
 from layer import hiddenLayer,inputLayer,outputLayer
 from functions import euler_loss,cross_entropy_loss
 import numpy as np
+import time
 
 
 class neuralNetwork:
@@ -15,6 +16,7 @@ class neuralNetwork:
         
 
     def set_layer(self,layer_list):
+        self.layers = list()
         input_size = layer_list[0]
         output_size = layer_list[2]
         hidden_layers = layer_list[1] 
@@ -58,13 +60,14 @@ class neuralNetwork:
     def train(self,x,t):
         train_size = x.shape[0]
         batch_size = int(train_size*self.batch_per)
+        start = time.time()
         for i in range(self.epoch):
             batch = np.random.choice(train_size,batch_size)
             x_batch = x[batch]
             t_batch = t[batch]
             y = self.predict(x_batch)
             if i%100 == 0:
-                word = '========epoch' + str(i) + '========='
+                word = '--------- epoch' + str(i) + ' ---------'
                 print(word)
                 loss = neuralNetwork.loss(y,t_batch)
                 y_sub = np.argmax(y,axis=1)
@@ -72,14 +75,25 @@ class neuralNetwork:
                 acc = np.sum(y_sub == t_sub)/float(batch_size)
                 self.loss_list.append(loss)
                 self.acc_list.append(acc)
+                elapsed = time.time() - start
                 print('loss : ' + str(loss))
                 print('accuracy : ' + str(acc))
-                word = '='*len(word)
-                print(word)
+                print('time : {} [sec]'.format(elapsed))
+                word = '-'*len(word)
+                print(word + '\n')
 
             self.backword_propagation(y,t_batch)
-            
+        print('\n')
+        elapsed = time.time() - start
+        train_acc = self.accuracy(x,t)   
         print('<< All training epochs ended. >>')
+        word = '========= result ========='
+        print(word)
+        print('Elapsed time : {} [sec]'.format(elapsed))
+        print('Train set accuracy : {}'.format(train_acc))
+        word = '='*len(word)
+        print(word)
+        return (elapsed,train_acc)
 
 
     def accuracy(self,x,t):

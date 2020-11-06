@@ -5,7 +5,7 @@ import time
 
 
 class neuralNetwork:
-    def __init__(self,learning_rate = 0.0001,epoch = 20000,batch_per = 0.6):
+    def __init__(self,learning_rate = 0.0001,epoch = 20000,batch_per = 0.6,loss_func="euler"):
         self.layers = list()
         self.deltas = list()
         self.learning_rate = learning_rate
@@ -13,6 +13,7 @@ class neuralNetwork:
         self.epoch = epoch
         self.loss_list = list()
         self.acc_list = list()
+        self.loss_func = loss_func
         
 
     def set_layer(self,layer_list):
@@ -31,6 +32,7 @@ class neuralNetwork:
 
         output_layer = outputLayer(input_size=former,output_size=output_size,activation='identity',learning_rate=self.learning_rate)
         self.layers.append(output_layer)
+
         print('<< successfully layers are updated >>')
     
     
@@ -43,9 +45,11 @@ class neuralNetwork:
 
         return vector
 
-    @classmethod
     def loss(self,y,t):
-        loss = euler_loss(y,t)
+        if self.loss_func == 'euler':
+            loss = euler_loss(y,t)
+        elif self.loss_func == 'cross_entropy':
+            loss = cross_entropy_loss(y,t)
         return loss
 
     def backword_propagation(self,y,t):
@@ -67,8 +71,6 @@ class neuralNetwork:
             t_batch = t[batch]
             y = self.predict(x_batch)
             if i%100 == 0:
-                word = '--------- epoch' + str(i) + ' ---------'
-                print(word)
                 loss = neuralNetwork.loss(y,t_batch)
                 y_sub = np.argmax(y,axis=1)
                 t_sub = np.argmax(t_batch,axis=1)
@@ -76,6 +78,12 @@ class neuralNetwork:
                 self.loss_list.append(loss)
                 self.acc_list.append(acc)
                 elapsed = time.time() - start
+                
+                '''
+                途中経過を表示
+                '''
+                word = '--------- epoch' + str(i) + ' ---------'
+                print(word)
                 print('loss : ' + str(loss))
                 print('accuracy : ' + str(acc))
                 print('time : {} [sec]'.format(elapsed))
@@ -83,10 +91,15 @@ class neuralNetwork:
                 print(word + '\n')
 
             self.backword_propagation(y,t_batch)
-        print('\n')
+
         elapsed = time.time() - start
-        train_acc = self.accuracy(x,t)   
+        train_acc = self.accuracy(x,t)  
+        print('\n')
         print('<< All training epochs ended. >>')
+
+        '''
+        トレーニングセットの正答率とトレーニングにかかった時間を結果として表示する。
+        '''
         word = '========= result ========='
         print(word)
         print('Elapsed time : {} [sec]'.format(elapsed))

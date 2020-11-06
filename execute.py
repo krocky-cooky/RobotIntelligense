@@ -13,7 +13,7 @@ t = np.identity(10)[t]
 x_train,x_test,t_train,t_test = train_test_split(x,t,random_state=0)
 
 if __name__ == '__main__':
-    network = neuralNetwork(epoch=31000,learning_rate=0.0002)
+    network = neuralNetwork(epoch=3000,learning_rate=0.0002)
     layer_list = [64,[100,70],10]
     network.set_layer(layer_list)
     (elapsed_time,train_acc) = network.train(x_train,t_train)

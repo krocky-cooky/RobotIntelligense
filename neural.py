@@ -47,10 +47,10 @@ class neuralNetwork:
 
     def loss(self,y,t):
         if self.loss_func == 'euler':
-            loss = euler_loss(y,t)
+            res = euler_loss(y,t)
         elif self.loss_func == 'cross_entropy':
-            loss = cross_entropy_loss(y,t)
-        return loss
+            res = cross_entropy_loss(y,t)
+        return res
 
     def backword_propagation(self,y,t):
         dif = y-t
@@ -71,11 +71,11 @@ class neuralNetwork:
             t_batch = t[batch]
             y = self.predict(x_batch)
             if i%100 == 0:
-                loss = neuralNetwork.loss(y,t_batch)
+                losses = self.loss(y,t_batch)
                 y_sub = np.argmax(y,axis=1)
                 t_sub = np.argmax(t_batch,axis=1)
                 acc = np.sum(y_sub == t_sub)/float(batch_size)
-                self.loss_list.append(loss)
+                self.loss_list.append(losses)
                 self.acc_list.append(acc)
                 elapsed = time.time() - start
                 
@@ -84,7 +84,7 @@ class neuralNetwork:
                 '''
                 word = '--------- epoch' + str(i) + ' ---------'
                 print(word)
-                print('loss : ' + str(loss))
+                print('loss : ' + str(losses))
                 print('accuracy : ' + str(acc))
                 print('time : {} [sec]'.format(elapsed))
                 word = '-'*len(word)

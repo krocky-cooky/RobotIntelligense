@@ -18,7 +18,7 @@ if __name__ == '__main__':
     network.set_layer(layer_list)
     (elapsed_time,train_acc) = network.train(x_train,t_train)
     y_test = network.predict(x_test)
-    loss = neuralNetwork.loss(y_test,t_test)
+    loss = network.loss(y_test,t_test)
     accuracy = network.accuracy(x_test,t_test)
     print('\n\n===========test case results=========')
     print('loss : {}'.format(loss))

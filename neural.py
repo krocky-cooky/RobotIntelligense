@@ -7,6 +7,14 @@ import matplotlib.cm as cm
 
 
 class neuralNetwork:
+    SETTINGS = {
+        'activation':{
+            'hidden':'Relu',
+            'output':'indentity'
+        },
+        'optimize_initial_weight':True
+    }
+
     def __init__(
         self,
         learning_rate = 0.0001,
@@ -41,7 +49,8 @@ class neuralNetwork:
                 input_size=former,
                 output_size=sz,
                 learning_rate=self.learning_rate,
-                activation='Relu'
+                activation=neuralNetwork.SETTINGS['activation']['hidden'],
+                optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight']
             )
             self.layers.append(layer)
             former = sz
@@ -49,8 +58,9 @@ class neuralNetwork:
         output_layer = outputLayer(
             input_size=former,
             output_size=output_size,
-            activation='identity',
-            learning_rate=self.learning_rate
+            activation=neuralNetwork.SETTINGS['activation']['output'],
+            learning_rate=self.learning_rate,
+            optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight']
         )
         self.layers.append(output_layer)
 
@@ -83,7 +93,7 @@ class neuralNetwork:
 
 
     def backword_propagation(self,y,t):
-        dif = dif(y,t)
+        dif = self.dif(y,t)
         layers = self.layers[1:]
         for layer in reversed(layers):
             layer.update_delta(dif)

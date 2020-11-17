@@ -10,11 +10,14 @@ class hiddenLayer:
         input_size,
         output_size,
         activation = 'Relu',
-        learning_rate=0.001
+        learning_rate=0.001,
+        optimize_initial_weight = True
     ):
         self.bias = np.zeros((1,output_size))
-        #self.weight = 0.01*np.random.randn(input_size,output_size)
-        self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
+        if optimize_initial_weight:
+            self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
+        else:
+            self.weight = 0.01*np.random.randn(input_size,output_size)
         self.which_activation = activation
         self.learning_rate = learning_rate
         self.v = None
@@ -73,11 +76,14 @@ class outputLayer:
         input_size,
         output_size,
         activation = 'identity',
-        learning_rate=0.001
+        learning_rate=0.001,
+        optimize_initial_weight = True
     ):
         self.bias = np.zeros((1,output_size))
-        #self.weight = 0.01*np.random.randn(input_size,output_size)
-        self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
+        if optimize_initial_weight:
+            self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
+        else:
+            self.weight = 0.01*np.random.randn(input_size,output_size)
 
         self.which_activation = activation
         self.learning_rate = learning_rate

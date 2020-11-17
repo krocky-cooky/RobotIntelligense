@@ -5,7 +5,14 @@ import time
 
 
 class neuralNetwork:
-    def __init__(self,learning_rate = 0.0001,epoch = 20000,batch_per = 0.6,loss_func="euler"):
+    def __init__(
+        self,
+        learning_rate = 0.0001,
+        epoch = 20000,
+        batch_per = 0.6,
+        loss_func="euler",
+        log_freq = 100
+    ):
         self.layers = list()
         self.deltas = list()
         self.learning_rate = learning_rate
@@ -14,6 +21,7 @@ class neuralNetwork:
         self.loss_list = list()
         self.acc_list = list()
         self.loss_func = loss_func
+        self.log_freq = log_freq
         
 
     def set_layer(self,layer_list):
@@ -26,11 +34,21 @@ class neuralNetwork:
         self.layers.append(input_layer)
         former = input_size
         for sz in hidden_layers:
-            layer = hiddenLayer(input_size=former,output_size=sz,learning_rate=self.learning_rate,activation='Relu')
+            layer = hiddenLayer(
+                input_size=former,
+                output_size=sz,
+                learning_rate=self.learning_rate,
+                activation='Relu'
+            )
             self.layers.append(layer)
             former = sz
 
-        output_layer = outputLayer(input_size=former,output_size=output_size,activation='identity',learning_rate=self.learning_rate)
+        output_layer = outputLayer(
+            input_size=former,
+            output_size=output_size,
+            activation='identity',
+            learning_rate=self.learning_rate
+        )
         self.layers.append(output_layer)
 
         print('<< successfully layers are updated >>')
@@ -70,7 +88,7 @@ class neuralNetwork:
             x_batch = x[batch]
             t_batch = t[batch]
             y = self.predict(x_batch)
-            if i%100 == 0:
+            if i%self.log_freq == 0:
                 losses = self.loss(y,t_batch)
                 y_sub = np.argmax(y,axis=1)
                 t_sub = np.argmax(t_batch,axis=1)

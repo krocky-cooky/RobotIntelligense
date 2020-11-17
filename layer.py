@@ -5,7 +5,13 @@ import scipy as sp
 from functions import softmax,Relu,sigmoid,identity
 
 class hiddenLayer:
-    def __init__(self,input_size,output_size,activation = 'Relu',learning_rate=0.001):
+    def __init__(
+        self,
+        nput_size,
+        output_size,
+        activation = 'Relu',
+        learning_rate=0.001
+    ):
         self.bias = np.zeros((1,output_size))
         #self.weight = 0.01*np.random.randn(input_size,output_size)
         self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
@@ -62,7 +68,13 @@ class inputLayer:
 
 
 class outputLayer:
-    def __init__(self,input_size,output_size,activation = 'identity',learning_rate=0.001):
+    def __init__(
+        self,
+        input_size,
+        output_size,
+        activation = 'identity',
+        learning_rate=0.001
+    s):
         self.bias = np.zeros((1,output_size))
         #self.weight = 0.01*np.random.randn(input_size,output_size)
         self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)

@@ -4,3 +4,4 @@ deep-learning-from-scratch/
 kuzushiji/
 *.pyc
 practice.ipynb
+.ipynb_checkpoints/

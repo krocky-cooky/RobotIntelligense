@@ -2,6 +2,8 @@ from layer import hiddenLayer,inputLayer,outputLayer
 from functions import euler_loss,cross_entropy_loss
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 
 class neuralNetwork:
@@ -11,7 +13,7 @@ class neuralNetwork:
         epoch = 20000,
         batch_per = 0.6,
         loss_func="euler",
-        log_freq = 100
+        log_frequency = 100
     ):
         self.layers = list()
         self.deltas = list()
@@ -21,7 +23,8 @@ class neuralNetwork:
         self.loss_list = list()
         self.acc_list = list()
         self.loss_func = loss_func
-        self.log_freq = log_freq
+        self.log_freq = log_frequency
+        self.cmap = plt.get_cmap('tab10')
         
 
     def set_layer(self,layer_list):
@@ -56,7 +59,8 @@ class neuralNetwork:
     
 
     def predict(self,input):
-        
+        self.acc_list = list()
+        self.loss_list = list()
         vector = input
         for layer in self.layers:
             vector = layer.process(vector)
@@ -69,9 +73,17 @@ class neuralNetwork:
         elif self.loss_func == 'cross_entropy':
             res = cross_entropy_loss(y,t)
         return res
+    
+    def dif(self,y,t):
+        if self.loss_func == 'euler':
+            res = euler_loss(y,t,div = True)
+        elif self.loss_func == 'cross_entropy':
+            res = cross_entropy_loss(y,t,div = True)
+        return res
+
 
     def backword_propagation(self,y,t):
-        dif = y-t
+        dif = dif(y,t)
         layers = self.layers[1:]
         for layer in reversed(layers):
             layer.update_delta(dif)
@@ -88,13 +100,13 @@ class neuralNetwork:
             x_batch = x[batch]
             t_batch = t[batch]
             y = self.predict(x_batch)
+            losses = self.loss(y,t_batch)
+            y_sub = np.argmax(y,axis = 1)
+            t_sub = np.argmax(t_batch,axis = 1)
+            acc = np.sum(y_sub == t_sub)/float(batch_size)
+            self.loss_list.append(losses)
+            self.acc_list.append(acc)
             if i%self.log_freq == 0:
-                losses = self.loss(y,t_batch)
-                y_sub = np.argmax(y,axis=1)
-                t_sub = np.argmax(t_batch,axis=1)
-                acc = np.sum(y_sub == t_sub)/float(batch_size)
-                self.loss_list.append(losses)
-                self.acc_list.append(acc)
                 elapsed = time.time() - start
                 
                 '''
@@ -133,7 +145,38 @@ class neuralNetwork:
         t_sub = np.argmax(t,axis=1)
         acc = np.sum(y_sub == t_sub)/float(y.shape[0])
         return acc
+
         
+    def visualize(self):
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111)
+        t = np.linspace(1,self.epoch,self.epoch)
+        plot1 = ax1.plot(
+            t,
+            self.acc_list,
+            label = 'accuracy',
+            c = self.cmap(0)
+        )
+        ax2 = ax1.twinx()
+        plot2 = ax2.plot(
+            t,
+            self.loss_list,
+            label = 'loss',
+            c = self.cmap(1)
+        )
+        h1, l1 = ax1.get_legend_handles_labels()
+        h2, l2 = ax2.get_legend_handles_labels()  
+        ax1.legend(
+            h1+h2,
+            l1+l2,
+            loc='upper right'
+        )
+        ax1.set_xlabel('epoch')
+        ax1.set_ylabel('accuracy')
+        ax2.set_ylabel('loss')
+        plt.title('transition of accuracy and loss')
+        plt.show()
+
 
         
 

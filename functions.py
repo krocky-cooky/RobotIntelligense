@@ -32,12 +32,19 @@ def identity(x,div):
         return x
 
 
-def euler_loss(y,t):
+def euler_loss(y,t,div = False):
+    if div:
+        return y-t
     loss = np.sum((y-t)**2)/2
 
     return loss
 
-def cross_entropy_loss(y,t):
+def cross_entropy_loss(y,t,div = False):
+    if div:
+        ret = y-t
+        ret = ret/y
+        ret = ret/(1-y)
+        return ret
     delta = 1e-7
     loss = -np.sum(t*np.log(y + delta))
     return loss

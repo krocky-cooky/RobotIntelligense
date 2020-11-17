@@ -7,7 +7,7 @@ from functions import softmax,Relu,sigmoid,identity
 class hiddenLayer:
     def __init__(
         self,
-        nput_size,
+        input_size,
         output_size,
         activation = 'Relu',
         learning_rate=0.001
@@ -74,7 +74,7 @@ class outputLayer:
         output_size,
         activation = 'identity',
         learning_rate=0.001
-    s):
+    ):
         self.bias = np.zeros((1,output_size))
         #self.weight = 0.01*np.random.randn(input_size,output_size)
         self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)

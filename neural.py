@@ -8,11 +8,11 @@ import matplotlib.cm as cm
 
 class neuralNetwork:
     SETTINGS = {
-        'activation':{
-            'hidden':'Relu',
-            'output':'indentity'
+        'activation' : {
+            'hidden' : 'Relu',
+            'output' : 'identity'
         },
-        'optimize_initial_weight':True
+        'optimize_initial_weight' : True,
     }
 
     def __init__(
@@ -24,7 +24,6 @@ class neuralNetwork:
         log_frequency = 100
     ):
         self.layers = list()
-        self.deltas = list()
         self.learning_rate = learning_rate
         self.batch_per = batch_per
         self.epoch = epoch
@@ -69,12 +68,9 @@ class neuralNetwork:
     
 
     def predict(self,input):
-        self.acc_list = list()
-        self.loss_list = list()
         vector = input
         for layer in self.layers:
             vector = layer.process(vector)
-
         return vector
 
     def loss(self,y,t):
@@ -102,6 +98,8 @@ class neuralNetwork:
 
 
     def train(self,x,t):
+        self.loss_list = list()
+        self.acc_list = list()
         train_size = x.shape[0]
         batch_size = int(train_size*self.batch_per)
         start = time.time()

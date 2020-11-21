@@ -14,6 +14,7 @@ class hiddenLayer:
         optimize_initial_weight = True
     ):
         self.bias = np.zeros((1,output_size))
+        self.weight = None
         if optimize_initial_weight:
             self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
         else:
@@ -80,6 +81,7 @@ class outputLayer:
         optimize_initial_weight = True
     ):
         self.bias = np.zeros((1,output_size))
+        self.weight = None
         if optimize_initial_weight:
             self.weight = np.random.randn(input_size,output_size)/math.sqrt(input_size)
         else:

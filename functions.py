@@ -10,7 +10,8 @@ def softmax(a,div):
 
 def sigmoid(x,div):
     if div:
-        return sigmoid(x,False)*(1-sigmoid(x,False))
+        tmp = sigmoid(x,False)
+        return tmp*(1-tmp)
     else:
         return 1/(1+np.exp(-x))
 
@@ -25,7 +26,7 @@ def Relu(x,div):
     else:
         return np.maximum(0,x)
 
-def identity(x,div):
+def identity(x,div = False):
     if div:
         return 1
     else :
@@ -35,9 +36,10 @@ def identity(x,div):
 def euler_loss(y,t,div = False):
     if div:
         return y-t
-    loss = np.sum((y-t)**2)/2
-
-    return loss
+    else:
+        loss = np.sum((y-t)**2)/2
+        
+        return loss
 
 def cross_entropy_loss(y,t,div = False):
     if div:
@@ -45,7 +47,8 @@ def cross_entropy_loss(y,t,div = False):
         ret = ret/y
         ret = ret/(1-y)
         return ret
-    delta = 1e-7
-    loss = -np.sum(t*np.log(y + delta))
-    return loss
+    else:
+        delta = 1e-7
+        loss = -np.sum(t*np.log(y + delta))
+        return loss
 

@@ -155,7 +155,10 @@ class neuralNetwork:
         return acc
 
         
-    def visualize(self):
+    def visualize(
+        self,
+        acc_bound = 0,
+    ):
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
         t = np.linspace(1,self.epoch,self.epoch)
@@ -165,6 +168,7 @@ class neuralNetwork:
             label = 'accuracy',
             c = self.cmap(0)
         )
+        ax1.set_ylim([acc_bound,1.2])
         ax2 = ax1.twinx()
         plot2 = ax2.plot(
             t,

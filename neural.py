@@ -168,7 +168,7 @@ class neuralNetwork:
             label = 'accuracy',
             c = self.cmap(0)
         )
-        ax1.set_ylim([acc_bound,1.2])
+        ax1.set_ylim([acc_bound,1.1])
         ax2 = ax1.twinx()
         plot2 = ax2.plot(
             t,

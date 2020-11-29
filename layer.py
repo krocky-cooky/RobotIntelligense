@@ -45,12 +45,13 @@ class hiddenLayer:
 
     def update_delta(self,dif):
         self.delta = self.activation(self.v,div=True)*dif
+        
 
 
     def update_weight(self):
-        x = self.learning_rate*np.dot(self.input.T,self.delta)
+        x = self.learning_rate/self.delta.shape[0]*np.dot(self.input.T,self.delta)
         self.weight -= x
-        self.bias -= self.learning_rate*np.sum(self.delta,axis=0)
+        self.bias -= self.learning_rate/self.delta.shape[0]*np.sum(self.delta,axis=0)
 
 
 
@@ -111,8 +112,8 @@ class outputLayer:
         self.delta = self.activation(self.v,div=True)*dif
 
     def update_weight(self):
-        self.weight -= self.learning_rate*np.dot(self.input.T,self.delta)
-        self.bias -= self.learning_rate*np.sum(self.delta,axis=0)
+        self.weight -= self.learning_rate/self.delta.shape[0]*np.dot(self.input.T,self.delta)
+        self.bias -= self.learning_rate/self.delta.shape[0]*np.sum(self.delta,axis=0)
 
 
     def send_backword(self):

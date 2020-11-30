@@ -1,5 +1,6 @@
 from layer import hiddenLayer,inputLayer,outputLayer
 from functions import euler_loss,cross_entropy_loss
+
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -21,7 +22,9 @@ class neuralNetwork:
         epoch = 20000,
         batch_per = 0.6,
         loss_func="euler",
-        log_frequency = 100
+        optimizer = 'normal',
+        log_frequency = 100,
+        mu = 0.5
     ):
         self.layers = list()
         self.learning_rate = learning_rate
@@ -32,6 +35,8 @@ class neuralNetwork:
         self.loss_func = loss_func
         self.log_freq = log_frequency
         self.cmap = plt.get_cmap('tab10')
+        self.mu = mu
+        self.optimizer = optimizer
         
 
     def set_layer(self,layer_list):
@@ -49,7 +54,9 @@ class neuralNetwork:
                 output_size=sz,
                 learning_rate=self.learning_rate,
                 activation=neuralNetwork.SETTINGS['activation']['hidden'],
-                optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight']
+                optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+                optimizer = self.optimizer,
+                mu = self.mu
             )
             self.layers.append(layer)
             former = sz
@@ -59,7 +66,9 @@ class neuralNetwork:
             output_size=output_size,
             activation=neuralNetwork.SETTINGS['activation']['output'],
             learning_rate=self.learning_rate,
-            optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight']
+            optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+            optimizer = self.optimizer,
+            mu = self.mu
         )
         self.layers.append(output_layer)
 

@@ -61,6 +61,8 @@ class hiddenLayer:
             return sigmoid(input,div)
         elif name == 'identity':
             return identity(input,div)
+        else:
+            raise Exception('活性化関数が正しく指定されていません。')
 
     def update_delta(self,dif):
         self.optimizer.delta = self.activation(self.v,div=True)*dif
@@ -144,6 +146,8 @@ class outputLayer:
             return sigmoid(input,div)
         elif name == 'identity':
             return identity(input,div)
+        else:
+            raise Exception('活性化関数が正しく指定されていません。')
 
     def update_delta(self,dif):
         self.optimizer.delta = self.activation(self.v,div=True)*dif

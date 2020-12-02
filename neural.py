@@ -20,7 +20,7 @@ class neuralNetwork:
         self,
         learning_rate = 0.0001,
         epoch = 20000,
-        batch_per = 0.6,
+        batch_size = 100,
         loss_func="euler",
         optimizer = 'normal',
         log_frequency = 100,
@@ -28,7 +28,7 @@ class neuralNetwork:
     ):
         self.layers = list()
         self.learning_rate = learning_rate
-        self.batch_per = batch_per
+        self.batch_size = batch_size
         self.epoch = epoch
         self.loss_list = list()
         self.acc_list = list()
@@ -110,7 +110,7 @@ class neuralNetwork:
         self.loss_list = list()
         self.acc_list = list()
         train_size = x.shape[0]
-        batch_size = int(train_size*self.batch_per)
+        batch_size = self.batch_size
         start = time.time()
         for i in range(self.epoch):
             batch = np.random.choice(train_size,batch_size)

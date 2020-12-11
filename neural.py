@@ -5,6 +5,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import json
 
 
 class neuralNetwork:
@@ -37,6 +38,8 @@ class neuralNetwork:
         self.cmap = plt.get_cmap('tab10')
         self.mu = mu
         self.optimizer = optimizer
+        self.trained = False
+        self.SETTINGS = neuralNetwork.SETTINGS
         
 
     def set_layer(self,layer_list):
@@ -153,6 +156,7 @@ class neuralNetwork:
         print('Train set accuracy : {}'.format(train_acc))
         word = '='*len(word)
         print(word)
+        self.trained = True
         return (elapsed,train_acc)
 
 
@@ -197,6 +201,109 @@ class neuralNetwork:
         ax2.set_ylabel('loss')
         plt.title('transition of accuracy and loss')
         plt.show()
+
+    def save(self,file_name):
+        if not self.trained:
+            raise Exception
+
+        """
+        トレーニング済みニューラルネットワークを保存する。
+        保存するもの・・・
+        SETTINGS
+        layer_list
+        learning_rate
+        epoch
+        batch_size
+        loss_func
+        optimizer
+        log_frequency
+        mu
+        weight
+        loss_list
+        acc_list
+        """
+        path = './logs/' + file_name + '.json'
+        file = {
+            'SETTINGS' : self.SETTINGS,
+            'constructor' : {
+                'learning_rate' : self.learning_rate,
+                'epoch' : self.epoch,
+                'batch_size' : self.batch_size,
+                'loss_func' : self.loss_func,
+                'optimizer' : self.optimizer,
+                'log_frequency' : self.log_freq,
+                'mu' : self.mu
+            },
+            'layers' : [],
+            'loss_list' : self.loss_list,
+            'acc_list'  : self.acc_list
+        }
+
+        for i,layer in enumerate(self.layers):
+            description = dict()
+            if i == 0:
+                description['constructor'] = {
+                    'size' : layer.size
+                }
+            else:
+                description['constructor'] = {
+                    'input_size' : layer.weight.shape[0],
+                    'output_size' : layer.weight.shape[1],
+                    'activation' : layer.which_activation,
+                    'learning_rate' : layer.learning_rate,
+                    'optimizer' : layer.optimizer_name,
+                }
+
+                if layer.optimizer_name == "momentum":
+                    description['constructor']['mu'] = layer.optimizer.mu
+
+                description['weight'] = layer.weight.tolist()
+                description['bias'] = layer.bias.tolist()
+            
+            file['layers'].append(description)
+
+        
+        with open(path,mode='w') as f:
+            json.dump(file,f,indent = 4)
+
+    @classmethod
+    def load(cls,file):
+        default_setting = cls.SETTINGS
+        path = './logs/' + file + '.json'
+        with open(path) as f:
+            txt = f.read()
+        data = json.loads(txt)
+        cls.SETTINGS = data['SETTINGS']
+        net = cls(**data['constructor'])
+        
+        for i,description in enumerate(data['layers']):
+            if i == 0:
+                layer = inputLayer(**description['constructor'])
+                net.layers.append(layer)
+            elif i == len(data['layers'])-1:
+                layer = outputLayer(**description['constructor'])
+                layer.weight = np.array(description['weight'])
+                layer.bias = np.array(description['bias'])
+                net.layers.append(layer)
+            else:
+                layer = hiddenLayer(**description['constructor'])
+                layer.weight = np.array(description['weight'])
+                layer.bias = np.array(description['bias'])
+                net.layers.append(layer)
+
+        net.acc_list = data['acc_list']
+        net.loss_list = data['loss_list']
+        cls.SETTINGS = default_setting
+        print('successfully network was constructed!')
+        return net
+
+
+        
+
+                
+
+
+
 
 
         

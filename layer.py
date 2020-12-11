@@ -28,6 +28,7 @@ class hiddenLayer:
         self.y = None
         self.delta = None
         self.input = None
+        self.optimizer_name = optimizer
         if optimizer == 'normal':
             self.optimizer = Normal(
                 weight = self.weight,
@@ -114,6 +115,7 @@ class outputLayer:
 
         self.which_activation = activation
         self.learning_rate = learning_rate
+        self.optimizer_name = optimizer
         if optimizer == 'normal':
             self.optimizer = Normal(
                 weight = self.weight,

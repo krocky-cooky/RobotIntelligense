@@ -1,5 +1,8 @@
-from layer import hiddenLayer,inputLayer,outputLayer
+import os,sys
+sys.path.append(os.path.dirname(__file__))
+
 from functions import euler_loss,cross_entropy_loss
+from layer import hiddenLayer,inputLayer,outputLayer
 
 import numpy as np
 import time
@@ -19,7 +22,7 @@ class neuralNetwork:
 
     def __init__(
         self,
-        learning_rate = 0.0001,
+        learning_rate = 0.1,
         epoch = 20000,
         batch_size = 100,
         loss_func="euler",
@@ -43,6 +46,10 @@ class neuralNetwork:
         
 
     def set_layer(self,layer_list):
+        """
+        layer_listに層のサイズを入力してニューラルネットワークの層構造を定義する。
+        ex) layer_list = [64,[50,40],10]
+        """
         self.layers = list()
         input_size = layer_list[0]
         output_size = layer_list[2]
@@ -80,12 +87,18 @@ class neuralNetwork:
     
 
     def predict(self,input):
+        """
+        予測メソッド
+        """
         vector = input
         for layer in self.layers:
             vector = layer.process(vector)
         return vector
 
     def loss(self,y,t):
+        """
+        誤差を計算
+        """
         if self.loss_func == 'euler':
             res = euler_loss(y,t)
         elif self.loss_func == 'cross_entropy':
@@ -93,6 +106,9 @@ class neuralNetwork:
         return res
     
     def dif(self,y,t):
+        """
+        誤差の逆伝播
+        """
         if self.loss_func == 'euler':
             res = euler_loss(y,t,div = True)
         elif self.loss_func == 'cross_entropy':
@@ -222,7 +238,10 @@ class neuralNetwork:
         loss_list
         acc_list
         """
-        path = './logs/' + file_name + '.json'
+
+        if not os.path.exists('./logs'):
+            os.mkdir('logs')
+        path = os.path.join(os.getcwd() ,'logs/' + file_name)
         file = {
             'SETTINGS' : self.SETTINGS,
             'constructor' : {
@@ -261,18 +280,20 @@ class neuralNetwork:
                 description['bias'] = layer.bias.tolist()
             
             file['layers'].append(description)
-
         
-        with open(path,mode='w') as f:
-            json.dump(file,f,indent = 4)
+        json_data = json.dumps(file,indent = 4)
+
+
+        with open(path,mode='wb') as f:
+            f.write(json_data.encode('utf-8'))
 
     @classmethod
     def load(cls,file):
         default_setting = cls.SETTINGS
-        path = './logs/' + file + '.json'
-        with open(path) as f:
-            txt = f.read()
-        data = json.loads(txt)
+        path = os.path.join(os.getcwd(),'logs/' + file)
+        with open(path,mode = 'rb') as f:
+            byt = f.read()
+        data = json.loads(byt.decode('utf-8'))
         cls.SETTINGS = data['SETTINGS']
         net = cls(**data['constructor'])
         
@@ -296,15 +317,3 @@ class neuralNetwork:
         cls.SETTINGS = default_setting
         print('successfully network was constructed!')
         return net
-
-
-        
-
-                
-
-
-
-
-
-        
-

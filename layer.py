@@ -1,4 +1,6 @@
-import sys,os
+import os,sys
+sys.path.append(os.path.dirname(__file__))
+
 import math
 import numpy as np
 import scipy as sp

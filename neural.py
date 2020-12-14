@@ -281,7 +281,7 @@ class neuralNetwork:
             
             file['layers'].append(description)
         
-        json_data = json.dumps(file,indent = 4)
+        json_data = json.dumps(file)
 
 
         with open(path,mode='wb') as f:

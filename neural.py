@@ -9,6 +9,7 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import json
+import pickle
 
 
 class neuralNetwork:
@@ -315,5 +316,42 @@ class neuralNetwork:
         net.acc_list = data['acc_list']
         net.loss_list = data['loss_list']
         cls.SETTINGS = default_setting
+        print('successfully network was constructed!')
+        return net
+
+    def save_pickle(self,file_name):
+        if not self.trained:
+            raise Exception
+
+        """
+        トレーニング済みニューラルネットワークを保存する。
+        保存するもの・・・
+        SETTINGS
+        layer_list
+        learning_rate
+        epoch
+        batch_size
+        loss_func
+        optimizer
+        log_frequency
+        mu
+        weight
+        loss_list
+        acc_list
+        """
+
+        if not os.path.exists('./pickle_logs'):
+            os.mkdir('pickle_logs')
+        path = os.path.join(os.getcwd() ,'pickle_logs/' + file_name)
+        with open(path,mode = 'wb') as f:
+            pickle.dump(self,f)
+        
+
+    @classmethod
+    def load_pickle(cls,file):
+        path = os.path.join(os.getcwd(),'pickle_logs/' + file)
+        with open(path,mode = 'rb') as f:
+            net = pickle.load(f)
+        
         print('successfully network was constructed!')
         return net

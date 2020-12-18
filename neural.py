@@ -219,7 +219,7 @@ class neuralNetwork:
         plt.title('transition of accuracy and loss')
         plt.show()
 
-    def save(self,file_name):
+    def save_json(self,file_name):
         if not self.trained:
             raise Exception
 
@@ -289,7 +289,7 @@ class neuralNetwork:
             f.write(json_data.encode('utf-8'))
 
     @classmethod
-    def load(cls,file):
+    def load_json(cls,file):
         default_setting = cls.SETTINGS
         path = os.path.join(os.getcwd(),'logs/' + file)
         with open(path,mode = 'rb') as f:
@@ -315,11 +315,12 @@ class neuralNetwork:
 
         net.acc_list = data['acc_list']
         net.loss_list = data['loss_list']
+        net.trained = True
         cls.SETTINGS = default_setting
         print('successfully network was constructed!')
         return net
 
-    def save_pickle(self,file_name):
+    def save(self,file_name):
         if not self.trained:
             raise Exception
 
@@ -340,16 +341,16 @@ class neuralNetwork:
         acc_list
         """
 
-        if not os.path.exists('./pickle_logs'):
-            os.mkdir('pickle_logs')
-        path = os.path.join(os.getcwd() ,'pickle_logs/' + file_name)
+        if not os.path.exists('./.logs'):
+            os.mkdir('.logs')
+        path = os.path.join(os.getcwd() ,'.ogs/' + file_name)
         with open(path,mode = 'wb') as f:
             pickle.dump(self,f)
         
 
     @classmethod
-    def load_pickle(cls,file):
-        path = os.path.join(os.getcwd(),'pickle_logs/' + file)
+    def load(cls,file):
+        path = os.path.join(os.getcwd(),'.logs/' + file)
         with open(path,mode = 'rb') as f:
             net = pickle.load(f)
         

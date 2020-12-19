@@ -240,9 +240,9 @@ class neuralNetwork:
         acc_list
         """
 
-        if not os.path.exists('./logs'):
+        if not os.path.exists('./json_logs'):
             os.mkdir('logs')
-        path = os.path.join(os.getcwd() ,'logs/' + file_name)
+        path = os.path.join(os.getcwd() ,'json_logs/' + file_name)
         file = {
             'SETTINGS' : self.SETTINGS,
             'constructor' : {
@@ -291,7 +291,7 @@ class neuralNetwork:
     @classmethod
     def load_json(cls,file):
         default_setting = cls.SETTINGS
-        path = os.path.join(os.getcwd(),'logs/' + file)
+        path = os.path.join(os.getcwd(),'json_logs/' + file)
         with open(path,mode = 'rb') as f:
             byt = f.read()
         data = json.loads(byt.decode('utf-8'))
@@ -341,16 +341,16 @@ class neuralNetwork:
         acc_list
         """
 
-        if not os.path.exists('./.logs'):
-            os.mkdir('.logs')
-        path = os.path.join(os.getcwd() ,'.ogs/' + file_name)
+        if not os.path.exists('./logs'):
+            os.mkdir('logs')
+        path = os.path.join(os.getcwd() ,'logs/' + file_name)
         with open(path,mode = 'wb') as f:
             pickle.dump(self,f)
         
 
     @classmethod
     def load(cls,file):
-        path = os.path.join(os.getcwd(),'.logs/' + file)
+        path = os.path.join(os.getcwd(),'logs/' + file)
         with open(path,mode = 'rb') as f:
             net = pickle.load(f)
         

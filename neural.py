@@ -9,6 +9,7 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import json
+import pickle
 
 
 class neuralNetwork:
@@ -218,7 +219,7 @@ class neuralNetwork:
         plt.title('transition of accuracy and loss')
         plt.show()
 
-    def save(self,file_name):
+    def save_json(self,file_name):
         if not self.trained:
             raise Exception
 
@@ -239,9 +240,9 @@ class neuralNetwork:
         acc_list
         """
 
-        if not os.path.exists('./logs'):
+        if not os.path.exists('./json_logs'):
             os.mkdir('logs')
-        path = os.path.join(os.getcwd() ,'logs/' + file_name)
+        path = os.path.join(os.getcwd() ,'json_logs/' + file_name)
         file = {
             'SETTINGS' : self.SETTINGS,
             'constructor' : {
@@ -288,9 +289,9 @@ class neuralNetwork:
             f.write(json_data.encode('utf-8'))
 
     @classmethod
-    def load(cls,file):
+    def load_json(cls,file):
         default_setting = cls.SETTINGS
-        path = os.path.join(os.getcwd(),'logs/' + file)
+        path = os.path.join(os.getcwd(),'json_logs/' + file)
         with open(path,mode = 'rb') as f:
             byt = f.read()
         data = json.loads(byt.decode('utf-8'))
@@ -314,6 +315,44 @@ class neuralNetwork:
 
         net.acc_list = data['acc_list']
         net.loss_list = data['loss_list']
+        net.trained = True
         cls.SETTINGS = default_setting
+        print('successfully network was constructed!')
+        return net
+
+    def save(self,file_name):
+        if not self.trained:
+            raise Exception
+
+        """
+        トレーニング済みニューラルネットワークを保存する。
+        保存するもの・・・
+        SETTINGS
+        layer_list
+        learning_rate
+        epoch
+        batch_size
+        loss_func
+        optimizer
+        log_frequency
+        mu
+        weight
+        loss_list
+        acc_list
+        """
+
+        if not os.path.exists('./logs'):
+            os.mkdir('logs')
+        path = os.path.join(os.getcwd() ,'logs/' + file_name)
+        with open(path,mode = 'wb') as f:
+            pickle.dump(self,f)
+        
+
+    @classmethod
+    def load(cls,file):
+        path = os.path.join(os.getcwd(),'logs/' + file)
+        with open(path,mode = 'rb') as f:
+            net = pickle.load(f)
+        
         print('successfully network was constructed!')
         return net

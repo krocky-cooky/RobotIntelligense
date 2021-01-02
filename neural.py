@@ -109,7 +109,7 @@ class neuralNetwork:
         return res
     
 
-    def backword_propagation(self,y,t):
+    def backward_propagation(self,y,t):
         delta = self.loss_func.backward(y,t)
         layers = self.layers[1:]
         for layer in reversed(layers):
@@ -147,7 +147,7 @@ class neuralNetwork:
                 word = '-'*len(word)
                 print(word + '\n')
 
-            self.backword_propagation(y,t_batch)
+            self.backward_propagation(y,t_batch)
 
         elapsed = time.time() - start
         train_acc = self.accuracy(x,t)  

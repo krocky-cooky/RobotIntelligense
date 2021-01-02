@@ -20,7 +20,7 @@ class SumSquare(Loss):
 class CrossEntropy(Loss):
     def forward(self,y,t):
         d = 1e-7
-        loss = np.sum(t*np.log(y+d))
+        loss = -np.sum(t*np.log(y+d))
         return loss
 
     def backward(self,y,t):

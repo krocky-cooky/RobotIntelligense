@@ -1,8 +1,8 @@
 import os,sys
 sys.path.append(os.path.dirname(__file__))
 
-from functions import euler_loss,cross_entropy_loss
-from layer import hiddenLayer,inputLayer,outputLayer
+from losses import SumSquare,CrossEntropy
+from layer import hiddenAndOutputLayer,inputLayer
 
 import numpy as np
 import time
@@ -15,7 +15,7 @@ import pickle
 class neuralNetwork:
     SETTINGS = {
         'activation' : {
-            'hidden' : 'Relu',
+            'hidden' : 'relu',
             'output' : 'identity'
         },
         'optimize_initial_weight' : True,
@@ -26,7 +26,7 @@ class neuralNetwork:
         learning_rate = 0.1,
         epoch = 20000,
         batch_size = 100,
-        loss_func="euler",
+        loss_func="square",
         optimizer = 'normal',
         log_frequency = 100,
         mu = 0.5
@@ -37,13 +37,20 @@ class neuralNetwork:
         self.epoch = epoch
         self.loss_list = list()
         self.acc_list = list()
-        self.loss_func = loss_func
+        self.loss_func = None
         self.log_freq = log_frequency
         self.cmap = plt.get_cmap('tab10')
         self.mu = mu
         self.optimizer = optimizer
         self.trained = False
         self.SETTINGS = neuralNetwork.SETTINGS
+
+        if loss_func == "square":
+            self.loss_func = SumSquare()
+        elif loss_func == "cross_entropy":
+            self.loss_func = CrossEntropy()
+        else :
+            raise Exception('誤差関数が正しくありません')
         
 
     def set_layer(self,layer_list):
@@ -56,11 +63,11 @@ class neuralNetwork:
         output_size = layer_list[2]
         hidden_layers = layer_list[1] 
         
-        input_layer = inputLayer(input_size)
+        input_layer = inputLayer()
         self.layers.append(input_layer)
         former = input_size
         for sz in hidden_layers:
-            layer = hiddenLayer(
+            layer = hiddenAndOutputLayer(
                 input_size=former,
                 output_size=sz,
                 learning_rate=self.learning_rate,
@@ -72,7 +79,7 @@ class neuralNetwork:
             self.layers.append(layer)
             former = sz
 
-        output_layer = outputLayer(
+        output_layer = hiddenAndOutputLayer(
             input_size=former,
             output_size=output_size,
             activation=neuralNetwork.SETTINGS['activation']['output'],
@@ -84,6 +91,7 @@ class neuralNetwork:
         self.layers.append(output_layer)
 
         print('<< successfully layers are updated >>')
+        return self
     
     
 
@@ -93,37 +101,19 @@ class neuralNetwork:
         """
         vector = input
         for layer in self.layers:
-            vector = layer.process(vector)
+            vector = layer(vector)
         return vector
 
     def loss(self,y,t):
-        """
-        誤差を計算
-        """
-        if self.loss_func == 'euler':
-            res = euler_loss(y,t)
-        elif self.loss_func == 'cross_entropy':
-            res = cross_entropy_loss(y,t)
+        res = self.loss_func(y,t)
         return res
     
-    def dif(self,y,t):
-        """
-        誤差の逆伝播
-        """
-        if self.loss_func == 'euler':
-            res = euler_loss(y,t,div = True)
-        elif self.loss_func == 'cross_entropy':
-            res = cross_entropy_loss(y,t,div = True)
-        return res
-
 
     def backword_propagation(self,y,t):
-        dif = self.dif(y,t)
+        delta = self.loss_func.backward(y,t)
         layers = self.layers[1:]
         for layer in reversed(layers):
-            layer.update_delta(dif)
-            dif = layer.send_backword()
-            layer.update_weight()
+            delta = layer.backward(delta)
 
 
     def train(self,x,t):

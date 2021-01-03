@@ -1,8 +1,5 @@
 import os,sys
-sys.path.append(os.path.dirname(__file__))
-
-from losses import SumSquare,CrossEntropy
-from layer import hiddenAndOutputLayer,inputLayer
+sys.path.append(os.path.join(os.path.dirname(__file__),'modules'))
 
 import numpy as np
 import time
@@ -11,12 +8,15 @@ import matplotlib.cm as cm
 import json
 import pickle
 
+from losses import SumSquare,CrossEntropy
+from layer import hiddenAndOutputLayer,inputLayer
+
 
 class neuralNetwork:
     SETTINGS = {
         'activation' : {
             'hidden' : 'relu',
-            'output' : 'identity'
+            'output' : 'sigmoid'
         },
         'optimize_initial_weight' : True,
     }
@@ -313,24 +313,6 @@ class neuralNetwork:
     def save(self,file_name):
         if not self.trained:
             raise Exception
-
-        """
-        トレーニング済みニューラルネットワークを保存する。
-        保存するもの・・・
-        SETTINGS
-        layer_list
-        learning_rate
-        epoch
-        batch_size
-        loss_func
-        optimizer
-        log_frequency
-        mu
-        weight
-        loss_list
-        acc_list
-        """
-
         if not os.path.exists('./logs'):
             os.mkdir('logs')
         path = os.path.join(os.getcwd() ,'logs/' + file_name)

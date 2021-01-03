@@ -18,7 +18,7 @@ class ActivationLayer:
 
 class Sigmoid(ActivationLayer):
     def forward(self,input):
-        self.y = 1/(1+np.exp(-x))
+        self.y = 1/(1+np.exp(-input))
         return self.y
     
     def backward(self,delta):

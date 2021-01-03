@@ -4,7 +4,8 @@ sys.path.append(os.path.dirname(__file__))
 import math
 import numpy as np
 import scipy as sp
-from activations import *
+
+from activations import Idenity,Sigmoid,Sotfmax
 from optimizer import Normal,Momentum
 
 

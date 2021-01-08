@@ -11,14 +11,12 @@ import pickle
 from losses import SumSquare,CrossEntropy
 from layer import hiddenAndOutputLayer,inputLayer
 
-
 class neuralNetwork:
     SETTINGS = {
         'activation' : {
             'hidden' : 'relu',
             'output' : 'sigmoid'
         },
-        'optimize_initial_weight' : True,
     }
 
     def __init__(
@@ -29,7 +27,8 @@ class neuralNetwork:
         loss_func="square",
         optimizer = 'normal',
         log_frequency = 100,
-        mu = 0.5
+        mu = 0.5,
+        optimize_initial_weight = False
     ):
         self.layers = list()
         self.learning_rate = learning_rate
@@ -44,6 +43,7 @@ class neuralNetwork:
         self.optimizer = optimizer
         self.trained = False
         self.SETTINGS = neuralNetwork.SETTINGS
+        self.optimize_initial_weight = optimize_initial_weight
 
         if loss_func == "square":
             self.loss_func = SumSquare()
@@ -72,7 +72,7 @@ class neuralNetwork:
                 output_size=sz,
                 learning_rate=self.learning_rate,
                 activation=neuralNetwork.SETTINGS['activation']['hidden'],
-                optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+                optimize_initial_weight = self.optimize_initial_weight,
                 optimizer = self.optimizer,
                 mu = self.mu
             )
@@ -84,7 +84,7 @@ class neuralNetwork:
             output_size=output_size,
             activation=neuralNetwork.SETTINGS['activation']['output'],
             learning_rate=self.learning_rate,
-            optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+            optimize_initial_weight = self.optimize_initial_weight,
             optimizer = self.optimizer,
             mu = self.mu
         )
@@ -111,8 +111,7 @@ class neuralNetwork:
 
     def backward_propagation(self,y,t):
         delta = self.loss_func.backward(y,t)
-        layers = self.layers[1:]
-        for layer in reversed(layers):
+        for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
 

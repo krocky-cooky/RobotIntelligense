@@ -5,7 +5,7 @@ import math
 import numpy as np
 import scipy as sp
 
-from activations import Idenity,Sigmoid,Sotfmax
+from activations import Identity,Sigmoid,Softmax,Relu
 from optimizer import Normal,Momentum
 
 
@@ -91,4 +91,7 @@ class inputLayer(Layer):
     def forward(self,input):
         self.input = input
         return input
+
+    def backward(self,delta):
+        return delta
 

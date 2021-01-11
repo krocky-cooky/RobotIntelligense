@@ -10,15 +10,25 @@ import pickle
 
 from losses import SumSquare,CrossEntropy
 from layer import hiddenAndOutputLayer,inputLayer
+from score import *
 
 class neuralNetwork:
-    SETTINGS = {
-        'activation' : {
-            'hidden' : 'relu',
-            'output' : 'sigmoid'
-        },
+    CHOICE = {
+        'activation' : [
+            'relu',
+            'sigmoid',
+            'softmax',
+            'identity'
+        ],
+        'loss_func' : [
+            'square',
+            'cross_entropy'
+        ],
+        'optimizer' : [
+            'normal',
+            'momentum'
+        ]
     }
-
     def __init__(
         self,
         learning_rate = 0.1,
@@ -26,9 +36,9 @@ class neuralNetwork:
         batch_size = 100,
         loss_func="square",
         optimizer = 'normal',
+        optimize_initial_weight = True,
         log_frequency = 100,
-        mu = 0.5,
-        optimize_initial_weight = False
+        mu = 0.5
     ):
         self.layers = list()
         self.learning_rate = learning_rate
@@ -42,8 +52,11 @@ class neuralNetwork:
         self.mu = mu
         self.optimizer = optimizer
         self.trained = False
-        self.SETTINGS = neuralNetwork.SETTINGS
         self.optimize_initial_weight = optimize_initial_weight
+        self.activation = {
+            'hidden' : 'relu',
+            'output' : 'identity'
+        }
 
         if loss_func == "square":
             self.loss_func = SumSquare()
@@ -71,7 +84,7 @@ class neuralNetwork:
                 input_size=former,
                 output_size=sz,
                 learning_rate=self.learning_rate,
-                activation=neuralNetwork.SETTINGS['activation']['hidden'],
+                activation=self.activation['hidden'],
                 optimize_initial_weight = self.optimize_initial_weight,
                 optimizer = self.optimizer,
                 mu = self.mu
@@ -82,7 +95,7 @@ class neuralNetwork:
         output_layer = hiddenAndOutputLayer(
             input_size=former,
             output_size=output_size,
-            activation=neuralNetwork.SETTINGS['activation']['output'],
+            activation=self.activation['output'],
             learning_rate=self.learning_rate,
             optimize_initial_weight = self.optimize_initial_weight,
             optimizer = self.optimizer,
@@ -116,62 +129,11 @@ class neuralNetwork:
 
 
     def train(self,x,t):
-        self.loss_list = list()
-        self.acc_list = list()
-        train_size = x.shape[0]
-        batch_size = self.batch_size
-        start = time.time()
-        for i in range(self.epoch):
-            batch = np.random.choice(train_size,batch_size)
-            x_batch = x[batch]
-            t_batch = t[batch]
-            y = self.predict(x_batch)
-            losses = self.loss(y,t_batch)
-            y_sub = np.argmax(y,axis = 1)
-            t_sub = np.argmax(t_batch,axis = 1)
-            acc = np.sum(y_sub == t_sub)/float(batch_size)
-            self.loss_list.append(losses)
-            self.acc_list.append(acc)
-            if i%self.log_freq == 0:
-                elapsed = time.time() - start
-                
-                '''
-                途中経過を表示
-                '''
-                word = '--------- epoch' + str(i) + ' ---------'
-                print(word)
-                print('loss : ' + str(losses))
-                print('accuracy : ' + str(acc))
-                print('time : {} [sec]'.format(elapsed))
-                word = '-'*len(word)
-                print(word + '\n')
-
-            self.backward_propagation(y,t_batch)
-
-        elapsed = time.time() - start
-        train_acc = self.accuracy(x,t)  
-        print('\n')
-        print('<< All training epochs ended. >>')
-
-        '''
-        トレーニングセットの正答率とトレーニングにかかった時間を結果として表示する。
-        '''
-        word = '========= result ========='
-        print(word)
-        print('Elapsed time : {} [sec]'.format(elapsed))
-        print('Train set accuracy : {}'.format(train_acc))
-        word = '='*len(word)
-        print(word)
-        self.trained = True
-        return (elapsed,train_acc)
+        pass
 
 
     def accuracy(self,x,t):
-        y = self.predict(x)
-        y_sub = np.argmax(y,axis=1)
-        t_sub = np.argmax(t,axis=1)
-        acc = np.sum(y_sub == t_sub)/float(y.shape[0])
-        return acc
+        pass
 
         
     def visualize(
@@ -312,6 +274,24 @@ class neuralNetwork:
     def save(self,file_name):
         if not self.trained:
             raise Exception
+
+        """
+        トレーニング済みニューラルネットワークを保存する。
+        保存するもの・・・
+        SETTINGS
+        layer_list
+        learning_rate
+        epoch
+        batch_size
+        loss_func
+        optimizer
+        log_frequency
+        mu
+        weight
+        loss_list
+        acc_list
+        """
+
         if not os.path.exists('./logs'):
             os.mkdir('logs')
         path = os.path.join(os.getcwd() ,'logs/' + file_name)
@@ -327,3 +307,133 @@ class neuralNetwork:
         
         print('successfully network was constructed!')
         return net
+
+
+class Classification(neuralNetwork):
+    def train(self,x,t):
+        self.loss_list = list()
+        self.acc_list = list()
+        train_size = x.shape[0]
+        batch_size = self.batch_size
+        start = time.time()
+        for i in range(self.epoch):
+            batch = np.random.choice(train_size,batch_size)
+            x_batch = x[batch]
+            t_batch = t[batch]
+            y = self.predict(x_batch)
+            losses = self.loss(y,t_batch)
+            y_sub = np.argmax(y,axis=1)
+            t_sub = np.argmax(t_batch,axis=1)
+            acc = np.sum(y_sub == t_sub)/float(y.shape[0])
+            self.loss_list.append(losses)
+            self.acc_list.append(acc)
+            if i%self.log_freq == 0:
+                elapsed = time.time() - start
+                
+                '''
+                途中経過を表示
+                '''
+                word = '--------- epoch' + str(i) + ' ---------'
+                print(word)
+                print('loss : ' + str(losses))
+                print('accuracy : ' + str(acc))
+                print('time : {} [sec]'.format(elapsed))
+                word = '-'*len(word)
+                print(word + '\n')
+
+            self.backward_propagation(y,t_batch)
+
+        elapsed = time.time() - start
+        train_acc = self.accuracy(x,t)  
+        print('\n')
+        print('<< All training epochs ended. >>')
+
+        '''
+        トレーニングセットの正答率とトレーニングにかかった時間を結果として表示する。
+        '''
+        word = '========= result ========='
+        print(word)
+        print('Elapsed time : {} [sec]'.format(elapsed))
+        print('Train set accuracy : {}'.format(train_acc))
+        word = '='*len(word)
+        print(word)
+        self.trained = True
+        return (elapsed,train_acc)
+
+    def accuracy(self,x,t):
+        y = self.predict(x)
+        y_sub = np.argmax(y,axis=1)
+        t_sub = np.argmax(t,axis=1)
+        acc = np.sum(y_sub == t_sub)/float(y.shape[0])
+        return acc
+
+class Regression(neuralNetwork):
+    def __init__(
+        self,
+        learning_rate = 0.1,
+        epoch = 20000,
+        batch_size = 100,
+        loss_func="square",
+        optimizer = 'normal',
+        optimize_initial_weight = True,
+        log_frequency = 100,
+        mu = 0.5,
+        accuracy_function = 'r2_score'
+    ):
+        super().__init__(
+            learning_rate,
+            epoch,
+            batch_size,
+            loss_func,
+            optimizer,
+            optimize_initial_weight,
+            log_frequency,
+            mu
+        )
+        self.ac_fun = accuracy_function
+        accuracy_functions = [
+            'r2_score',
+            'rmse',
+            'mae'
+        ]
+        if not accuracy_function in accuracy_functions:
+            raise Exception('精度関数が正しくありません')
+        
+
+    def train(self,x,t):
+        self.loss_list = list()
+        batch_size = self.batch_size
+        train_size = x.shape[0]
+        for i in range(self.epoch):
+            batch = np.random.choice(train_size,batch_size)
+            x_batch = x[batch]
+            t_batch = t[batch]
+            y = self.predict(x_batch)
+            loss = self.loss(y,t_batch)
+            acc = self.accuracy(y,t_batch)
+            self.loss_list.append(loss)
+            self.acc_list.append(acc)
+
+            if i%self.log_freq == 0:
+                print('epoch:{} , accuracy:{} , loss:{}'.format(
+                    i+1,
+                    acc,
+                    loss
+                ))
+
+            self.backward_propagation(y,t_batch)
+
+        print('========= result ========')
+        print('accuracy : {}\nloss : {}'.format(
+            self.accuracy(self.predict(x),t),
+            self.loss(x,t)
+        ))
+
+        
+    def accuracy(self,y,t):
+        if self.ac_fun == 'r2_score':
+            return r2_score(y,t)
+        elif self.ac_fun == 'rmse':
+            return rmse(y,t)
+        elif self.ac_fun == 'mae':
+            return mae(y,t)
